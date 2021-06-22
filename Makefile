@@ -20,7 +20,7 @@ CXXFLAGS+=-DDATE=\""$(DATE)"\" -DVERSION=\""$(VERSION)"\"
 # Enable warnings, disable some
 CXXFLAGS+=-W -Wall -Wno-long-long -pedantic -Wno-variadic-macros -Wno-unused-result -Wno-deprecated-copy -Wno-class-memaccess
 
-HEADERS=argparse.h barcode.h bamsubset.h workflow.h
+HEADERS=argparse.h bamsubset.h workflow.h
 
 .PHONY: all
 all: CXXFLAGS+=-O3 -DSEQAN_ENABLE_TESTING=0 -DSEQAN_ENABLE_DEBUG=0

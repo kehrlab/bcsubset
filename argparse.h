@@ -9,19 +9,20 @@ using namespace seqan;
 struct Parameters
 {
     CharString bamFileName;
-    CharString baiFileName;
-    CharString bedFileName;
+    //CharString baiFileName;
+    CharString bcWlFileName;
     CharString outBamFileName;
-    CharString filteredOutBamFileName;
 
-    Parameters(): bamFileName(""), baiFileName(""), bedFileName(""), outBamFileName(""), filteredOutBamFileName(""){}
+    //Parameters(): bamFileName(""), baiFileName(""), bcWlFileName(""), outBamFileName(""){}
 };
 
+/*
 void getbaiName(CharString & baiFileName, const CharString & bamFileName)
 {
     baiFileName = bamFileName;
     append(baiFileName, ".bai");
 }
+*/
 
 // ==========================================================================
 // Function printHelp()
@@ -39,6 +40,9 @@ void printHelp(char const * name)
     std::cerr << "\033[1mCOMMANDS\033[0m" << std::endl;
     std::cerr << "    \033[1m-f\033[0m   Specify a file containing the whitelisted barcodes to use for subsetting the bam file." << std::endl;
     std::cerr << std::endl;
+     std::cerr << "\033[1mCOMMANDS\033[0m" << std::endl;
+    std::cerr << "    \033[1m-o\033[0m   Specify an output name for the bam containing all reads with the whitelisted barcodes." << std::endl;
+    std::cerr << std::endl;
     std::cerr << "\033[1mVERSION\033[0m" << std::endl;
     std::cerr << "    " << "BCSubset" << " version: " << VERSION << std::endl;
     std::cerr << "    Last update " << DATE << std::endl;
@@ -55,11 +59,15 @@ ArgumentParser::ParseResult parseCommandLine(Parameters & params, int argc, char
 
     // Bam File
     addArgument(parser, ArgParseArgument(
-        ArgParseArgument::STRING, "TEXT"));
+        ArgParseArgument::STRING, "BAMFILE"));
     // BC whitelist File
     addOption(parser, ArgParseOption(
         "f", "bc_whitelist", "Location of file containing barcode whitelist",
-        ArgParseArgument::STRING, "TEXT"));
+        ArgParseArgument::INPUT_FILE, "FILE"));
+    // Out Bam File Name
+    addOption(parser, ArgParseOption(
+        "o", "out_bamfile", "Output name for barcode subset bam file",
+        ArgParseArgument::OUTPUT_FILE, "FILE"));
     
     // Parse command line.
     ArgumentParser::ParseResult res = parse(parser, argc, argv);
@@ -72,10 +80,10 @@ ArgumentParser::ParseResult parseCommandLine(Parameters & params, int argc, char
     // Extract option values and print them.
     getArgumentValue(params.bamFileName, parser, 0);
 
-    getbaiName(params.baiFileName, params.bamFileName);
+    getOptionValue(params.bcWlFileName, parser, "bc_whitelist");
 
-    getOptionValue(params.bedFileName, parser, "bc_whitelist");
-
+    getOptionValue(params.outBamFileName, parser, "out_bamfile");
+    
     return ArgumentParser::PARSE_OK;
 }
 

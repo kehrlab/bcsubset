@@ -6,6 +6,7 @@
  
 using namespace seqan;
 
+// Process bam header, add @PG line
 inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, const CharString & command, char const ** argv)
 {
 
@@ -14,7 +15,7 @@ inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, const Cha
   hrecord.type = BamHeaderRecordType::BAM_HEADER_PROGRAM;
   
   // Set tags
-  appendValue(hrecord.tags, Pair<CharString>("ID", "ctprocess"));
+  appendValue(hrecord.tags, Pair<CharString>("ID", "bcsubset"));
   appendValue(hrecord.tags, Pair<CharString>("VN", "0.0.1"));
 
   CharString clstring;
@@ -80,7 +81,7 @@ inline void getBarcodeFromTags(CharString & barcode, const BamAlignmentRecord & 
   unsigned idx = 0;
 
   BamTagsDict tagsDict(record.tags);
-  bool keyFound = findTagKey(idx, tagsDict, "BC");
+  bool keyFound = findTagKey(idx, tagsDict, "CR");
   if (keyFound)
   {
     if (!extractTagValue(barcode, tagsDict, idx))
