@@ -16,13 +16,6 @@ struct Parameters
     //Parameters(): bamFileName(""), baiFileName(""), bcWlFileName(""), outBamFileName(""){}
 };
 
-/*
-void getbaiName(CharString & baiFileName, const CharString & bamFileName)
-{
-    baiFileName = bamFileName;
-    append(baiFileName, ".bai");
-}
-*/
 
 // ==========================================================================
 // Function printHelp()
@@ -31,25 +24,25 @@ void getbaiName(CharString & baiFileName, const CharString & bamFileName)
 
 void printHelp(char const * name)
 {
-    std::cerr << "BCSubset - Bam barcode subsetting" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "BCSubset - Bam file subsetting by barcode" << std::endl;
     std::cerr << "=========================================" << std::endl;
     std::cerr << std::endl;
     std::cerr << "\033[1mSYNOPSIS\033[0m" << std::endl;
-    std::cerr << "    \033[1m" << name << " BAMFILE -F BC_WHITELIST_FILENAME" /*COMMAND\033[0m [\033[4mOPTIONS\033[0m]*/ << std::endl;
+    std::cerr << "    \033[1m" << name << " BAMFILE -f BC_WHITELIST_FILENAME -o OUT_BAMFILE_NAME " /*COMMAND\033[0m [\033[4mOPTIONS\033[0m]*/ << std::endl;
     std::cerr << std::endl;
-    std::cerr << "\033[1mCOMMANDS\033[0m" << std::endl;
+    std::cerr << "\033[1mOPTIONS\033[0m" << std::endl;
     std::cerr << "    \033[1m-f\033[0m   Specify a file containing the whitelisted barcodes to use for subsetting the bam file." << std::endl;
     std::cerr << std::endl;
-     std::cerr << "\033[1mCOMMANDS\033[0m" << std::endl;
-    std::cerr << "    \033[1m-o\033[0m   Specify an output name for the bam containing all reads with the whitelisted barcodes." << std::endl;
+    std::cerr << "    \033[1m-o\033[0m   Specify an output name for the bam file containing output reads with the whitelisted barcodes." << std::endl;
     std::cerr << std::endl;
     std::cerr << "\033[1mVERSION\033[0m" << std::endl;
     std::cerr << "    " << "BCSubset" << " version: " << VERSION << std::endl;
     std::cerr << "    Last update " << DATE << std::endl;
     std::cerr << "    Contact: Ana Pinson (ana.pinson[at]bihealth.de)" << std::endl;
     std::cerr << std::endl;
-    std::cerr << "Try `" << name << " COMMAND --help' for more information on each command." << std::endl;
-    std::cerr << std::endl;
+    //std::cerr << "Try `" << name << " --help' for more information on each command." << std::endl;
+    //std::cerr << std::endl;
 }
 
 ArgumentParser::ParseResult parseCommandLine(Parameters & params, int argc, char const ** argv)

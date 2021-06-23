@@ -18,6 +18,7 @@ struct Stats
 
    inline void report()
    {
+       std::cout << "Total records:\t" << (filteredReads + passedReads) << std::endl;
        std::cout << "Filtered records:\t" << filteredReads << "\nPassed records:\t" << passedReads << std::endl;
    }
 
@@ -47,15 +48,16 @@ bool readWhitelist(std::unordered_set<std::string> & wlBarcodes, const CharStrin
     }
 
     std::cout << "Loaded " << wlBarcodes.size() << " barcodes from \'" << bcWlFileName << "\'." << std::endl;
+    std::cout << std::endl;
 
     return !empty(wlBarcodes);
 }
 
 
 // Process bam header, add @PG line
-inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, const CharString & command, char const ** argv)
-{
+inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, char const ** argv)
 
+{
   // Modify @PG
   BamHeaderRecord hrecord;
   hrecord.type = BamHeaderRecordType::BAM_HEADER_PROGRAM;
@@ -66,7 +68,6 @@ inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, const Cha
 
   CharString clstring;
   append(clstring, "bcsubset ");
-  append(clstring, command);
 
   for (unsigned j=1; j<length(argv);++j)
   {

@@ -21,7 +21,7 @@ int main(int argc, char const * argv[])
     }
     else
     {
-        std::cout << "[bcsubset]   Bam file will be processed\n" <<std::endl;
+        std::cout << "\n[bcsubset]   Bam file will be processed\n" <<std::endl;
         return bamSubset(argc, argv);
     }
 

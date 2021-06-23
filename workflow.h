@@ -79,7 +79,8 @@ int bamSubset(int argc, char const * argv[])
     readHeader(header, inFile);
 
     // Write header
-    processHeader(header, bamFileOut, "bcsubset", argv);
+    processHeader(header, bamFileOut, argv);
+
 
     //std::cout << "Processed Header" <<std::endl;
 
@@ -87,7 +88,7 @@ int bamSubset(int argc, char const * argv[])
 
     stats.report();
 
-    std::cout << "Output file has been written to \'" << params.outBamFileName << "\'." << std::endl; 
+    std::cout << "\nOutput file has been written to \'" << params.outBamFileName << "\'." << std::endl; 
 
     return 0;
 }
