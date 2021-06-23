@@ -1,4 +1,4 @@
-bcsubset - bam file subsetting by barcode 
+bcsubset - BAM file subsetting by barcode 
 =========================================
 
 This tool selects a subset of records from a BAM file based on a barcode whitelist
@@ -16,7 +16,7 @@ cd bcsubset/
 make
 ```
 
-### Subsetting a bam file
+###  Execution
 ``` 
 bcsubset myBam.bam -f myWhitelist.txt -o outBamName.bam
 ```
