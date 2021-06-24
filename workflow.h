@@ -10,28 +10,23 @@
 using namespace seqan;
 
 //Checking parameters given by user
-
 int parseBCSubsetParams(Parameters & params, std::unordered_set<std::string> & wlBarcodes, int argc, char const * argv[])
 {
-
     if(parseCommandLine(params, argc, argv) != ArgumentParser::PARSE_OK)
     {
         std::cerr << "ERROR: Could not parse command line\n";
         return 1;
     }
-
     if (params.bcWlFileName == "")
     {
         std::cerr << "ERROR: whitelist file not specified. Please use option -f\n";
         return 1;
     }
-    
     if (params.outBamFileName == "")
     {
         std::cerr << "ERROR: Output file not specified. Please use option -o\n";
         return 1;
     }
-
     if(!readWhitelist(wlBarcodes, params.bcWlFileName))
     {
         std::cerr << "ERROR: Could not read " << params.bcWlFileName << "\n";
@@ -40,7 +35,7 @@ int parseBCSubsetParams(Parameters & params, std::unordered_set<std::string> & w
     return 0;
 }
 
-// Generate bam subset of reads with whitelisted barcodes
+// Generate BAM subset of reads with whitelisted barcodes
 int bamSubset(int argc, char const * argv[])
 {
     Stats stats;
@@ -53,7 +48,7 @@ int bamSubset(int argc, char const * argv[])
 
     readWhitelist(wlBarcodes, params.bcWlFileName);
 
-    // Open BamFileIn for reading.
+    // Open BamFileIn for reading
     BamFileIn inFile;
     if (!open(inFile, toCString(params.bamFileName)))
     {
@@ -61,8 +56,7 @@ int bamSubset(int argc, char const * argv[])
         return 1;
     }
 
-    // Open output file, BamFileOut accepts also an ostream and a format tag.
-    
+    // Open output file BamFileOut
     std::fstream outStream;
     outStream.open(toCString(params.outBamFileName), std::ios::out);
     if (!outStream.good())
