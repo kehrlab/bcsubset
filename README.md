@@ -4,7 +4,7 @@ bcsubset - BAM file subsetting by barcode
 
 This tool selects a subset of records from a BAM file based on a barcode whitelist. 
 
-<b>Input</b>: A BAM file and a barcode whitelist
+<b>Input</b>: A BAM file and a barcode whitelist.
 
 <b>Output</b>: A BAM file containing only  the records with the barcodes in the whitelist.
 
