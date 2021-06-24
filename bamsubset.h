@@ -18,16 +18,17 @@ struct Stats
 
    inline void report()
    {
-       std::cout << "Total records:\t" << (filteredReads + passedReads) << std::endl;
-       std::cout << "Filtered records:\t" << filteredReads << "\nPassed records:\t" << passedReads << std::endl;
+       std::cout << "\nSUMMARY" << std::endl;
+       std::cout << "Total records:\t\t" << (filteredReads + passedReads) << std::endl;
+       std::cout << "Filtered records:\t" << filteredReads << "\t(" << static_cast<double>(filteredReads)/(filteredReads + passedReads)*100 << "%)" 
+                 << "\nPassed records:\t\t" << passedReads << "\t(" << static_cast<double>(passedReads)/(filteredReads + passedReads)*100 << "%)" << std::endl;
    }
 
-};
+};  
 
 //Read a text file containing whitelisted barcodes, put into set of strings
 //Return false if text file can not be opened
 //Return true if success
-
 bool readWhitelist(std::unordered_set<std::string> & wlBarcodes, const CharString & bcWlFileName)
 {
     // Read whitelist File.
@@ -47,12 +48,10 @@ bool readWhitelist(std::unordered_set<std::string> & wlBarcodes, const CharStrin
         wlBarcodes.emplace(barcode);
     }
 
-    std::cout << "Loaded " << wlBarcodes.size() << " barcodes from \'" << bcWlFileName << "\'." << std::endl;
-    std::cout << std::endl;
+    std::cout << "\n[bcsubset] Loaded " << wlBarcodes.size() << " barcodes from \'" << bcWlFileName << "\'." << std::endl;
 
     return !empty(wlBarcodes);
 }
-
 
 // Process bam header, add @PG line
 inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, char const ** argv)
@@ -64,10 +63,10 @@ inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, char cons
   
   // Set tags
   appendValue(hrecord.tags, Pair<CharString>("ID", "bcsubset"));
-  appendValue(hrecord.tags, Pair<CharString>("VN", "0.0.1"));
+  appendValue(hrecord.tags, Pair<CharString>("VN", VERSION));
 
   CharString clstring;
-  append(clstring, "bcsubset ");
+  append(clstring, "bcsubset");
 
   for (unsigned j=1; j<length(argv);++j)
   {
@@ -75,7 +74,6 @@ inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, char cons
     append(clstring, argv[j]);
   }
 
-  //appendValue(hrecord.tags, Pair<CharString>("CL", "bcsubset test"));
   appendValue(hrecord.tags, Pair<CharString>("CL", clstring));
   
   appendValue(header, hrecord);
@@ -83,32 +81,46 @@ inline void processHeader(BamHeader & header, BamFileOut & bamFileOut, char cons
   writeHeader(bamFileOut, header);
 }
 
+//Trim the last n characters of barcode
+inline void trimBarcode(CharString & barcode, const unsigned toTrim)
+{
+    resize(barcode, length(barcode) - toTrim);
+}
+
 // Get barcode from tags in bam records, CR tag
-inline void getBarcodeFromTags(std::string & barcode, const BamAlignmentRecord & record)
+inline bool getBarcodeFromTags(std::string & barcode, const BamAlignmentRecord & record, const CharString & bctag, const unsigned toTrim)
 {
   unsigned idx = 0;
 
   BamTagsDict tagsDict(record.tags);
-  bool keyFound = findTagKey(idx, tagsDict, "CR");
+  //bool keyFound = findTagKey(idx, tagsDict, "CR");
+  bool keyFound = findTagKey(idx, tagsDict, bctag);
   if (keyFound)
   {
     CharString tag;
     if (!extractTagValue(tag, tagsDict, idx))
     {
-      std::cerr << "ERROR: There was an error extracting CR from tags of record: " << record.qName << "\n";
+      std::cerr << "WARNING: There was an error extracting barcode from tag " << bctag << " of record: " << record.qName << "\n";
+      return false;
     }
-    move(barcode, tag);
+    else
+    {
+        trimBarcode(tag, toTrim);
+        move(barcode, tag);
+        return true;
+    }
   }
   else
   {
-    std::cerr << "ERROR: CR not found in tags of record: " << record.qName << "\n";
+    return false;
   }
-} 
+}
 
-inline bool isGoodRecord(const BamAlignmentRecord & record, const std::unordered_set<std::string> & wlBarcodes)
+inline bool isGoodRecord(const BamAlignmentRecord & record, const std::unordered_set<std::string> & wlBarcodes, const CharString & bctag, const unsigned toTrim)
 {
     std::string readBC;
-    getBarcodeFromTags(readBC, record);
+    if(!getBarcodeFromTags(readBC, record, bctag, toTrim))
+        return false;
 
     if (wlBarcodes.find(readBC) == wlBarcodes.end())
         return false;
@@ -117,17 +129,14 @@ inline bool isGoodRecord(const BamAlignmentRecord & record, const std::unordered
 }
 
 // Find reads that come from a whitelisted barcode, go over every record to check barcode, if it matches the whitelisted barcode, write to subset output file
-//Return false if no read has the barcode
-//Return true on success
-
-inline void processBam(BamFileIn & inFile, BamFileOut & bamFileOut, const std::unordered_set<std::string> & wlBarcodes, Stats & stats)
+inline void processBam(BamFileIn & inFile, BamFileOut & bamFileOut, const std::unordered_set<std::string> & wlBarcodes, const CharString & bctag, const unsigned toTrim, Stats & stats)
 {
     while (!atEnd(inFile))
     {
         BamAlignmentRecord record;
         readRecord(record, inFile);
 
-        if(isGoodRecord(record, wlBarcodes))
+        if(isGoodRecord(record, wlBarcodes, bctag, toTrim))
         {
             writeRecord(bamFileOut, record);
             ++stats.passedReads;

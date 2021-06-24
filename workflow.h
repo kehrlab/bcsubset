@@ -6,8 +6,6 @@
 #include "argparse.h"
 #include "bamsubset.h"
 #include <iostream>
-#include <iterator>
-#include <map>
 
 using namespace seqan;
 
@@ -42,15 +40,15 @@ int parseBCSubsetParams(Parameters & params, std::unordered_set<std::string> & w
     return 0;
 }
 
-// Read whitelist file in
-
 // Generate bam subset of reads with whitelisted barcodes
-
 int bamSubset(int argc, char const * argv[])
 {
     Stats stats;
     Parameters params;
-    parseCommandLine(params, argc, argv);
+    int res = checkParser(parseCommandLine(params, argc, argv));
+    if (res >= 0)
+        return res;
+
     std::unordered_set<std::string> wlBarcodes;
 
     readWhitelist(wlBarcodes, params.bcWlFileName);
@@ -69,10 +67,8 @@ int bamSubset(int argc, char const * argv[])
     outStream.open(toCString(params.outBamFileName), std::ios::out);
     if (!outStream.good())
         SEQAN_THROW(FileOpenError(toCString(params.outBamFileName)));
-
-    //std::cout << "Opened Stream" <<std::endl;
     
-    BamFileOut bamFileOut(context(inFile), outStream, Bam()); //output file for 
+    BamFileOut bamFileOut(context(inFile), outStream, Bam());
 
     // Access header
     BamHeader header;
@@ -81,14 +77,11 @@ int bamSubset(int argc, char const * argv[])
     // Write header
     processHeader(header, bamFileOut, argv);
 
+    processBam(inFile, bamFileOut, wlBarcodes, params.bctag, params.trimming, stats);
 
-    //std::cout << "Processed Header" <<std::endl;
-
-    processBam(inFile, bamFileOut, wlBarcodes, stats);
+    std::cout << "[bcsubset] Output file has been written to \'" << params.outBamFileName << "\'." << std::endl; 
 
     stats.report();
-
-    std::cout << "\nOutput file has been written to \'" << params.outBamFileName << "\'." << std::endl; 
 
     return 0;
 }
