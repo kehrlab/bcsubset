@@ -11,7 +11,7 @@ SEQAN_LIB=.
 SPOA_LIB=.
 
 CXXFLAGS+=-I$(SEQAN_LIB) -I$(SPOA_LIB) -DSEQAN_HAS_ZLIB=1 -std=c++14 -DSEQAN_DISABLE_VERSION_CHECK
-LDLIBS=-lz -lpthread /usr/local/lib/libspoa.a
+LDLIBS=-lz -lpthread
 
 DATE=on 2021-06-24
 VERSION=0.0.1
