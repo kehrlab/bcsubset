@@ -43,6 +43,6 @@ sudo apt install zlib1g-dev
 ## Version and License
 ```
     Last update: 2021-06-24
-    ctProcess version: 0.0.1
+    bcsubset version: 0.0.1
     SeqAn version: 2.4.0
     Author: Ana Belen Solis Pinson (ana.pinson[at]bihealth.de)
